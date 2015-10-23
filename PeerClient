@@ -1,0 +1,87 @@
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+
+
+public class PeerClient {
+
+	private int peerPort;
+	private String peerName;
+	Socket socket = null;
+	PrintWriter out;
+	BufferedReader in;
+	private JFrame mainFrame;
+	private JButton connectButt;
+	private JLabel pName, title;
+	private JTextField enterName;
+	
+	public PeerClient(){
+		prepareGUI();
+	}
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		PeerClient peerClient = new PeerClient();
+	}
+
+	private void prepareGUI(){
+		mainFrame = new JFrame("FILESTORMMMMM");
+		mainFrame.setSize(800,400);
+		mainFrame.setLayout(new FlowLayout());
+		mainFrame.setVisible(true);
+		
+		title = new JLabel("FILESTORM CLIENT");
+		title.setSize(600, 36);
+		title.setLocation(240, 4);
+		title.setFont(title.getFont().deriveFont(32.0f));
+		title.setVisible(true);
+		pName = new JLabel("Enter Screen Name: ");
+		pName.setSize(150, 20);
+		pName.setLocation(200,150);
+		pName.setVisible(true);
+		
+		connectButt = new JButton("Connect");
+		connectButt.setSize(100, 20);
+		connectButt.setLocation(550, 300);
+		connectButt.setVisible(true);
+		
+		mainFrame.add(title);
+		mainFrame.add(pName);
+		mainFrame.add(connectButt);
+		
+		enterName = new JTextField("Ok");
+		enterName.setSize(200, 20);
+		enterName.setEnabled(true);
+		enterName.setLocation(pName.getX() + pName.getWidth() + 10, pName.getY());
+		enterName.setVisible(true);
+		
+		mainFrame.add(enterName);
+	}
+	
+	public void listenSocket(){
+		//Create socket connection
+		   try{
+		     socket = new Socket(peerName, peerPort);
+		     out = new PrintWriter(socket.getOutputStream(), 
+		                 true);
+		     in = new BufferedReader(new InputStreamReader(
+		                socket.getInputStream()));
+		   } catch (UnknownHostException e) {
+		     System.out.println("Unknown host: kq6py");
+		     System.exit(1);
+		   } catch  (IOException e) {
+		     System.out.println("No I/O");
+		     System.exit(1);
+		   }
+		}
+}
