@@ -3,23 +3,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import java.io.File;
@@ -30,14 +30,13 @@ import java.io.File;
  */
 public class SocketClient {
 
+	//
 	private static String hostname = "134.129.91.155";
-	private ServerSocket serverSocket;
 	private int port;
 	Socket socketClient;
 	String[] header;
 	String[] names = new String[6];
-	private int peerPort;
-	private String peerName, uploadPath;
+	private String uploadPath;
 	Socket socket = null;
 	PrintWriter out;
 	BufferedReader in;
@@ -46,6 +45,7 @@ public class SocketClient {
 	private JButton connectButt, searchButt, changeUpload;
 	private JLabel pName, title;
 	private JTextField searchText;
+	private JTextArea masterOutput;
 
 	public SocketClient(String hostname, int port) {
 		this.hostname = hostname;
@@ -70,7 +70,12 @@ public class SocketClient {
 		connectButt = new JButton("Connect and Upload");
 		pName = new JLabel("Current File Folder: " + uploadPath);
 		changeUpload = new JButton("Change File Folder");
-
+		masterOutput = new JTextArea();
+		masterOutput.setColumns(20);
+		masterOutput.setRows(6);
+		masterOutput.setEditable(false);
+		
+		
 		connectButt.setLocation(550, 300);
 
 		searchText.setEnabled(true);
@@ -84,7 +89,8 @@ public class SocketClient {
 		panel1.add(connectButt);
 		panel1.add(pName);
 		panel1.add(changeUpload);
-		mainFrame.setSize(400, 200);
+		panel1.add(masterOutput);
+		mainFrame.setSize(400, 400);
 		mainFrame.add(panel1);
 		mainFrame.setVisible(true);
 
@@ -100,14 +106,14 @@ public class SocketClient {
 				String[] input = new String[listOfFiles.length + 3];
 				input[0] = "CREATE";
 				InetAddress ip;
-				
+
 				try {
 					ip = InetAddress.getLocalHost();
 					input[1] = ip.toString();
 				} catch (UnknownHostException e2) {
 					e2.printStackTrace();
 				}
-				
+
 				input[2] = "9992";
 				for (int i = 0; i < listOfFiles.length; i++) {
 					input[i + 3] = listOfFiles[i].getName();
@@ -115,7 +121,7 @@ public class SocketClient {
 
 				try {
 					upload(input);
-				} catch (IOException e1) {
+				} catch (IOException | ClassNotFoundException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -130,7 +136,7 @@ public class SocketClient {
 
 				try {
 					upload(input);
-				} catch (IOException e1) {
+				} catch (IOException | ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -143,8 +149,9 @@ public class SocketClient {
 		socketClient = new Socket(hostname, port);
 		System.out.println("Connection Established");
 	}
-	
-	public void connectClient(String[] input) throws UnknownHostException, IOException{
+
+	public void connectClient(String[] input) throws UnknownHostException,
+			IOException, ClassNotFoundException {
 		String[] ip = input[0].split("\\/");
 		String hostname = ip[1];
 		String port = input[1];
@@ -154,25 +161,35 @@ public class SocketClient {
 		ObjectOutputStream out = new ObjectOutputStream(
 				socketClient.getOutputStream());
 		out.writeObject(input);
-	      byte [] mybytearray  = new byte [798787654];
-	      InputStream is = socketClient.getInputStream();
-	      FileOutputStream fos = new FileOutputStream("C:/Users/adam.m.brewer/Desktop/uploadFolder/" + input[2]);
-	      BufferedOutputStream bos = new BufferedOutputStream(fos);
-	      int bytesRead = is.read(mybytearray,0,mybytearray.length);
-	      int current = bytesRead;
-	      
-	      do {
-	          bytesRead =
-	             is.read(mybytearray, current, (mybytearray.length-current));
-	          if(bytesRead >= 0) current += bytesRead;
-	       } while(bytesRead > -1);
+		byte[] mybytearray = new byte[3000000];
+		InputStream is = socketClient.getInputStream();
+		// downloading file location
+		FileOutputStream fos = new FileOutputStream(
+				"C:/Users/adam.m.brewer/Desktop/uploadFolder/" + input[2]);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		int bytesRead = is.read(mybytearray, 0, mybytearray.length);
+		int current = bytesRead;
 
-	       bos.write(mybytearray, 0 , current);
-	       bos.flush();
-	       System.out.println("File " + input[2]
-	           + " downloaded (" + current + " bytes read)");
-	       if (fos != null) fos.close();
-	       if (bos != null) bos.close();
+		do {
+			bytesRead = is.read(mybytearray, current,
+					(mybytearray.length - current));
+			if (bytesRead >= 0)
+				current += bytesRead;
+		} while (bytesRead > -1);
+
+		bos.write(mybytearray, 0, current);
+		bos.flush();
+		System.out.println("File " + input[2] + " downloaded (" + current
+				+ " bytes read)");
+		if (fos != null)
+			fos.close();
+		if (bos != null)
+			bos.close();
+		String[] results = new String[3];
+		results[0] = "APPEND";
+		results[1] = InetAddress.getLocalHost().toString();
+		results[2] = input[2];
+		upload(results);
 	}
 
 	public void readResponse() throws IOException {
@@ -186,7 +203,7 @@ public class SocketClient {
 			System.out.println();
 		}
 	}
-	
+
 	public String[] getResponse() throws IOException {
 		String userInput;
 		String[] id = new String[2];
@@ -195,35 +212,51 @@ public class SocketClient {
 
 		System.out.print("RESPONSE FROM SERVER:");
 		while ((userInput = stdIn.readLine()) != null) {
-			if (id[0] == null){
+			if (id[0] == null) {
 				id[0] = userInput;
-			} else{
+			} else {
 				id[1] = userInput;
 			}
 		}
 		return id;
 	}
-	
+	public  void getMaster() throws ClassNotFoundException, IOException{
+		ObjectInputStream stdIn = new ObjectInputStream(socketClient.getInputStream());
+		ArrayList<ArrayList<String>> master = new ArrayList<ArrayList<String>>();
+
+		master = (ArrayList<ArrayList<String>>) stdIn.readObject();
+		for (int k = 0; k < master.size(); k++) {
+			System.out.println("Entry " + k);
+			ArrayList<String> row = master.get(k);
+			for (int i = 0; i < row.size(); i++) {
+				masterOutput.append(row.get(i));
+			}
+			System.out.println();
+		}
+	}
 
 	// Successfully passes an array through the socket
-	public void upload(String[] input) throws IOException {
+	public void upload(String[] input) throws IOException, ClassNotFoundException {
 		connectServer();
 		ObjectOutputStream out = new ObjectOutputStream(
 				socketClient.getOutputStream());
 		out.writeObject(input);
-		if( input.length == 2){
+		if (input.length == 2) {
 			String[] location = getResponse();
 			String[] request = new String[3];
 			request[0] = location[0];
 			request[1] = location[1];
 			request[2] = input[1];
 			connectClient(request);
-		} else{
-		readResponse();
-	}
+		} else {
+			readResponse();
+		}
+		getMaster();
 	}
 
 	public static void main(String arg[]) {
+		// Connects to server
+		// Server IP address or local host
 		SocketClient client = new SocketClient("10.134.218.196", 9991);
 		client.prepareGUI();
 	}
