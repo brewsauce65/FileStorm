@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 /**
  * A Simple Socket client that connects to our socket server
- *
+ *Fuck
  */
 public class SocketClient {
 
