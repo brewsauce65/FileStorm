@@ -1,6 +1,11 @@
+package wow;
+
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,6 +15,7 @@ import java.net.UnknownHostException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 
@@ -21,6 +27,8 @@ public class PeerClient {
 	PrintWriter out;
 	BufferedReader in;
 	private JFrame mainFrame;
+	private JPanel panel1;
+	// private JPanel panel2;
 	private JButton connectButt;
 	private JLabel pName, title;
 	private JTextField enterName;
@@ -36,37 +44,43 @@ public class PeerClient {
 
 	private void prepareGUI(){
 		mainFrame = new JFrame("FILESTORMMMMM");
-		mainFrame.setSize(800,400);
-		mainFrame.setLayout(new FlowLayout());
-		mainFrame.setVisible(true);
+		panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout());
 		
 		title = new JLabel("FILESTORM CLIENT");
-		title.setSize(600, 36);
+	
 		title.setLocation(240, 4);
 		title.setFont(title.getFont().deriveFont(32.0f));
 		title.setVisible(true);
 		pName = new JLabel("Enter Screen Name: ");
-		pName.setSize(150, 20);
-		pName.setLocation(200,150);
-		pName.setVisible(true);
-		
+		enterName = new JTextField(32);
 		connectButt = new JButton("Connect");
-		connectButt.setSize(100, 20);
+		
+		pName.setLocation(200,150);
+		
 		connectButt.setLocation(550, 300);
-		connectButt.setVisible(true);
 		
-		mainFrame.add(title);
-		mainFrame.add(pName);
-		mainFrame.add(connectButt);
-		
-		enterName = new JTextField("Ok");
-		enterName.setSize(200, 20);
 		enterName.setEnabled(true);
 		enterName.setLocation(pName.getX() + pName.getWidth() + 10, pName.getY());
-		enterName.setVisible(true);
 		
-		mainFrame.add(enterName);
+		panel1.add(title);
+		panel1.add(pName);
+		panel1.add(enterName);
+		panel1.add(connectButt);
+		mainFrame.setSize(600,300);
+		mainFrame.add(panel1);
+		mainFrame.setVisible(true);
+		
+		connectButt.addActionListener(new ActionListener() {
+			 public void actionPerformed(ActionEvent e)
+	            {
+	                //Execute when button is pressed
+	                System.out.println("You clicked the button");
+	                connect();
+	            }
+		});
 	}
+	
 	
 	public void listenSocket(){
 		//Create socket connection
@@ -77,11 +91,25 @@ public class PeerClient {
 		     in = new BufferedReader(new InputStreamReader(
 		                socket.getInputStream()));
 		   } catch (UnknownHostException e) {
-		     System.out.println("Unknown host: kq6py");
+		     System.out.println("Unknown host: "+ peerName);
 		     System.exit(1);
 		   } catch  (IOException e) {
 		     System.out.println("No I/O");
 		     System.exit(1);
 		   }
 		}
-}
+	
+	public void connect() {
+		// Change folder path on different computers 
+		File folder = new File("C:/Users/Squeelch/Documents/FileStorm");
+		File[] listOfFiles = folder.listFiles();
+
+	    for (int i = 0; i < listOfFiles.length; i++) {
+	      if (listOfFiles[i].isFile()) {
+	        System.out.println("File " + listOfFiles[i].getName());
+	      } else if (listOfFiles[i].isDirectory()) {
+	        System.out.println("Directory " + listOfFiles[i].getName());
+	      }
+	    }
+	}
+	}
