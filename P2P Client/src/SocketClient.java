@@ -1,9 +1,12 @@
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
@@ -151,6 +154,25 @@ public class SocketClient {
 		ObjectOutputStream out = new ObjectOutputStream(
 				socketClient.getOutputStream());
 		out.writeObject(input);
+	      byte [] mybytearray  = new byte [798787654];
+	      InputStream is = socketClient.getInputStream();
+	      FileOutputStream fos = new FileOutputStream("C:/Users/adam.m.brewer/Desktop/uploadFolder/" + input[2]);
+	      BufferedOutputStream bos = new BufferedOutputStream(fos);
+	      int bytesRead = is.read(mybytearray,0,mybytearray.length);
+	      int current = bytesRead;
+	      
+	      do {
+	          bytesRead =
+	             is.read(mybytearray, current, (mybytearray.length-current));
+	          if(bytesRead >= 0) current += bytesRead;
+	       } while(bytesRead > -1);
+
+	       bos.write(mybytearray, 0 , current);
+	       bos.flush();
+	       System.out.println("File " + input[2]
+	           + " downloaded (" + current + " bytes read)");
+	       if (fos != null) fos.close();
+	       if (bos != null) bos.close();
 	}
 
 	public void readResponse() throws IOException {
