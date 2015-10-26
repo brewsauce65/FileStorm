@@ -1,12 +1,8 @@
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Date;
 import java.io.File;
 import java.io.OutputStream;
 
@@ -44,6 +40,7 @@ public class SocketPeerHandler implements Runnable {
 	}
 
 	private void sendFile(String fileName) throws IOException {
+		// Uploading file location
 		File myFile = new File("c:/users/squeelch/documents/filestorm/"
 				+ fileName);
 		byte[] mybytearray = new byte[(int) myFile.length()];
@@ -61,31 +58,5 @@ public class SocketPeerHandler implements Runnable {
 		if (os != null)
 			os.close();
 	}
-
-	/*
-	 * private void createClientProfile(String[] input) throws IOException,
-	 * InterruptedException { SocketServer.addMaster(input); BufferedWriter
-	 * writer = new BufferedWriter(new
-	 * OutputStreamWriter(client.getOutputStream())); writer.write(
-	 * "Your files have been added to the directory and are available for download"
-	 * ); writer.flush(); writer.close(); }
-	 * 
-	 * private void appendClientProfile(String[] input) throws IOException,
-	 * InterruptedException { SocketServer.appendMaster(input); BufferedWriter
-	 * writer = new BufferedWriter(new
-	 * OutputStreamWriter(client.getOutputStream()));
-	 * writer.write("Your file list has been updated"); writer.flush();
-	 * writer.close(); }
-	 * 
-	 * private void fileSearch(String[] input) throws IOException,
-	 * InterruptedException { String[] id = SocketServer.searchMaster(input); if
-	 * (id.length>0){ BufferedWriter writer = new BufferedWriter(new
-	 * OutputStreamWriter(client.getOutputStream())); writer.write(id[0]);
-	 * writer.write(id[1]); writer.flush(); writer.close(); } else {
-	 * BufferedWriter writer = new BufferedWriter(new
-	 * OutputStreamWriter(client.getOutputStream()));
-	 * writer.write("Your file was not found. Please search again");
-	 * writer.flush(); writer.close(); } }
-	 */
 
 }
