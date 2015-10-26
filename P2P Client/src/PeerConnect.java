@@ -1,19 +1,14 @@
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
 
 public class PeerConnect implements Runnable {
 
-	private Socket client;
 	private ServerSocket serverSocket;
 
-/*	public PeerConnect(Socket client) {
-		this.client = client;
-	}*/
+	/*
+	 * public PeerConnect(Socket client) { this.client = client; }
+	 */
 
 	@Override
 	public void run() {
@@ -35,12 +30,11 @@ public class PeerConnect implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("The following client has connected:" + client.getInetAddress().getCanonicalHostName());
+			System.out.println("The following client has connected:"
+					+ client.getInetAddress().getCanonicalHostName());
 			// A client has connected to this server. Send welcome message
 			Thread thread = new Thread(new SocketPeerHandler(client));
 			thread.start();
-	}
+		}
 	}
 }
-
-	
