@@ -31,7 +31,7 @@ public class SocketClientHandler implements Runnable {
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		while ((userInput = stdIn.readLine()) != null) {
 			//possibly need to parse input from client
-			if (userInput.equals("CREATE")) {
+			if (userInput.equals("TIME?")) {
 				System.out.println("Creating new client profile");
 				createClientProfile();
 				break;
