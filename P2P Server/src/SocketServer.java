@@ -1,6 +1,5 @@
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -31,11 +30,12 @@ public class SocketServer {
 		}
 	}
 
-	public static void addMaster(String[] input) {
+	public static ArrayList<ArrayList<String>> addMaster(String[] input) {
 		String[] newInput = Arrays.copyOfRange(input, 1, input.length);
 		ArrayList<String> temp = new ArrayList<String>(Arrays.asList(newInput));
 		master.add(temp);
 		showMaster();
+		return master;
 	}
 
 	public static void appendMaster(String[] input) {
@@ -67,7 +67,8 @@ public class SocketServer {
 		while (true) {
 			System.out.println("Waiting for clients...");
 			client = serverSocket.accept();
-			System.out.println("The following client has connected:" + client.getInetAddress().getCanonicalHostName());
+			System.out.println("The following client has connected:"
+					+ client.getInetAddress().getCanonicalHostName());
 			// A client has connected to this server. Send welcome message
 			Thread thread = new Thread(new SocketClientHandler(client));
 			thread.start();
