@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -36,12 +37,15 @@ public class SocketClient {
            System.out.println(userInput);
        }
     }
-    
+    //Successfully passes an array through the socket
     public void askForTime() throws IOException{
-    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream()));
-       writer.write("TIME?");
-       writer.newLine();
-       writer.flush();
+    	String[] names = {"adam","john"};
+    	ObjectOutputStream out = new ObjectOutputStream(socketClient.getOutputStream());
+    	out.writeObject(names); 
+    //BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socketClient.getOutputStream()));
+       //writer.write("TIME?");
+       //writer.newLine();
+       //writer.flush();
     }
 
     public static void main(String arg[]){

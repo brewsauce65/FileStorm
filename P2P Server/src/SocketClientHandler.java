@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Date;
@@ -27,11 +28,19 @@ public class SocketClientHandler implements Runnable {
 	}
 
 	private void readResponse() throws IOException, InterruptedException {
-		String userInput;
-		BufferedReader stdIn = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		while ((userInput = stdIn.readLine()) != null) {
+		ObjectInputStream stdIn = new ObjectInputStream(client.getInputStream());
+		String[] clientInput;
+		try {
+			clientInput = (String[]) stdIn.readObject();
+			System.out.println(clientInput[0]);
+			System.out.println(clientInput[1]);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 			//possibly need to parse input from client
-			if (userInput.equals("TIME?")) {
+			/*if (userInput.equals("CREATE")) {
 				System.out.println("Creating new client profile");
 				createClientProfile();
 				break;
@@ -46,9 +55,9 @@ public class SocketClientHandler implements Runnable {
 				fileSearch();
 				break;
 			}
-			System.out.println(userInput);
+			System.out.println(userInput);*/
 		}
-	}
+	
 
 	private void createClientProfile() throws IOException, InterruptedException {
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
