@@ -142,11 +142,15 @@ public class SocketClient {
 	}
 	
 	public void connectClient(String[] input) throws UnknownHostException, IOException{
-		String hostname = input[0];
+		String[] ip = input[0].split("\\/");
+		String hostname = ip[1];
 		String port = input[1];
 		System.out.println("Attempting to connect to " + hostname + ":" + port);
 		socketClient = new Socket(hostname, Integer.parseInt(port));
 		System.out.println("Connection Established");
+		ObjectOutputStream out = new ObjectOutputStream(
+				socketClient.getOutputStream());
+		out.writeObject(input);
 	}
 
 	public void readResponse() throws IOException {
@@ -187,14 +191,18 @@ public class SocketClient {
 		out.writeObject(input);
 		if( input.length == 2){
 			String[] location = getResponse();
-			connectClient(location);
+			String[] request = new String[3];
+			request[0] = location[0];
+			request[1] = location[1];
+			request[2] = input[1];
+			connectClient(request);
 		} else{
 		readResponse();
 	}
 	}
 
 	public static void main(String arg[]) {
-		SocketClient client = new SocketClient("10.134.218.196", 9992);
+		SocketClient client = new SocketClient("10.134.218.196", 9991);
 		client.prepareGUI();
 	}
 }
