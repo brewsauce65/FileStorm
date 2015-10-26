@@ -135,9 +135,17 @@ public class SocketClient {
 		});
 	}
 
-	public void connect() throws UnknownHostException, IOException {
+	public void connectServer() throws UnknownHostException, IOException {
 		System.out.println("Attempting to connect to " + hostname + ":" + port);
 		socketClient = new Socket(hostname, port);
+		System.out.println("Connection Established");
+	}
+	
+	public void connectClient(String[] input) throws UnknownHostException, IOException{
+		String hostname = input[0];
+		String port = input[1];
+		System.out.println("Attempting to connect to " + hostname + ":" + port);
+		socketClient = new Socket(hostname, Integer.parseInt(port));
 		System.out.println("Connection Established");
 	}
 
@@ -153,18 +161,40 @@ public class SocketClient {
 		}
 	}
 	
+	public String[] getResponse() throws IOException {
+		String userInput;
+		String[] id = new String[2];
+		BufferedReader stdIn = new BufferedReader(new InputStreamReader(
+				socketClient.getInputStream()));
+
+		System.out.print("RESPONSE FROM SERVER:");
+		while ((userInput = stdIn.readLine()) != null) {
+			if (id[0] == null){
+				id[0] = userInput;
+			} else{
+				id[1] = userInput;
+			}
+		}
+		return id;
+	}
+	
 
 	// Successfully passes an array through the socket
 	public void upload(String[] input) throws IOException {
-		connect();
+		connectServer();
 		ObjectOutputStream out = new ObjectOutputStream(
 				socketClient.getOutputStream());
 		out.writeObject(input);
+		if( input.length == 2){
+			String[] location = getResponse();
+			connectClient(location);
+		} else{
 		readResponse();
+	}
 	}
 
 	public static void main(String arg[]) {
-		SocketClient client = new SocketClient("localhost", 9991);
+		SocketClient client = new SocketClient("10.134.218.196", 9992);
 		client.prepareGUI();
 	}
 }
