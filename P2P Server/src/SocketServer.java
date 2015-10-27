@@ -15,10 +15,13 @@ public class SocketServer {
 	private int port;
 	public static ArrayList<ArrayList<String>> master = new ArrayList<ArrayList<String>>();
 
+	// Constructor that takes a port as a parameter
 	public SocketServer(int port) {
 		this.port = port;
 	}
 
+	// Displays the contents of the database to the server console
+	// For debugging purposes only
 	public static void showMaster() {
 		for (int k = 0; k < master.size(); k++) {
 			System.out.println("Entry " + k);
@@ -30,6 +33,7 @@ public class SocketServer {
 		}
 	}
 
+	// Adding new client to the master ArrayList
 	public static ArrayList<ArrayList<String>> addMaster(String[] input) {
 		String[] newInput = Arrays.copyOfRange(input, 1, input.length);
 		ArrayList<String> temp = new ArrayList<String>(Arrays.asList(newInput));
@@ -38,6 +42,8 @@ public class SocketServer {
 		return master;
 	}
 
+	// Updates client profile after successful download
+	// input:{host IP, file to append}
 	public static void appendMaster(String[] input) {
 		for (int i = 0; i < master.size(); i++) {
 			if (master.get(i).contains(input[1])) {
@@ -47,6 +53,9 @@ public class SocketServer {
 		showMaster();
 	}
 
+	// Searches the master list for specified file
+	// input: {"SEARCH", file to be found}
+	// return: {target IP, target port} or {}
 	public static String[] searchMaster(String[] input) {
 		for (int i = 0; i < master.size(); i++) {
 			if (master.get(i).contains(input[1])) {
@@ -58,6 +67,9 @@ public class SocketServer {
 		return notFound;
 	}
 
+	// STarts the server
+	// Creates a new socket and waits for connections
+	// Creates new threads for each client that connects
 	public void start() throws IOException {
 		System.out.println("Starting the socket server at port:" + port);
 		serverSocket = new ServerSocket(port);
@@ -74,12 +86,9 @@ public class SocketServer {
 		}
 	}
 
-	/**
-	 * Creates a SocketServer object and starts the server.
-	 *
-	 * @param args
-	 * @throws Exception 
-	 */
+	// Main class
+	// Starts the server
+	// Sets port to 9991
 	public static void main(String[] args) throws Exception {
 		// Setting a default port number.
 		int portNumber = 9991;
